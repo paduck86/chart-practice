@@ -1,0 +1,13 @@
+{
+  "name": "chart-practice",
+  "version": "1.0.0",
+  "main": "path/to/main.css",
+  "ignore": [
+    ".jshintrc",
+    "**/*.txt"
+  ],
+  "dependencies": {
+    "d3": "^4.2.7",
+    "chartist": "^0.9.8"
+  }
+}

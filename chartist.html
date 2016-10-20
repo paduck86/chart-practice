@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My first Chartist Test</title>
+    <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css">
+    <!-- Site content goes here !-->
+
+</head>
+<body>
+
+    <div class="ct-chart ct-perfect-fourth"></div>
+    <div class="ct-chart ct-golden-section" id="chart1"></div>
+    <div class="ct-chart ct-golden-section" id="chart2"></div>
+
+    <script src="bower_components/chartist/dist/chartist.min.js"></script>
+    <script>
+        var data = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            series: [
+                [5,2,4,2,0]
+            ]
+        };
+
+        var options = {
+            width: 300,
+            height: 200
+        };
+        new Chartist.Line('.ct-chart', data, options);
+
+        new Chartist.Line('#chart1', {
+            labels: [1,2,3,4],
+            series: [[100,120,180,200]]
+        });
+
+        new Chartist.Bar('#chart2', {
+            labels: [1,2,3,4],
+            series: [[5,2,8,3]]
+        })
+    </script>
+</body>
+</html>
