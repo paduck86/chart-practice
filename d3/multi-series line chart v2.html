@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         .axis--x path {
-            display: none;
+            /*display: none;*/
         }
 
         .line {
@@ -36,11 +36,15 @@
                 .y(function(d) {return y(d.rate);});
 
         //d3.tsv("data.tsv", type, function(error, data) {
-        //var url = "http://rtrend.co.kr/api/rate/list?show=debug";
-        var url = "http://localhost:1337/api/rate/list?show=debug";
+        var url = "http://rtrend.co.kr/api/rate/list?show=debug";
+        //var url = "http://localhost:1337/api/rate/list?show=debug";
         d3.json(url, function(error, data) {
 
             var results = data.results;
+            for(var i = 0; i < results.length; i++) {
+                results[i].date = parseTime(results[i].date);
+            }
+
             var columns = ["date","BOK","DFF"];
             if (error) throw error;
 
@@ -98,10 +102,13 @@
         .header("Content-Type","application/json");
         //.send("POST", JSON.stringify({year: "2012", customer: "type1"}));
 
-        function type(d, _, columns) {
-            d.date = parseTime(d.date);
-            for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
-            return d;
+        function type(error, data) {
+
+            var results = data.results;
+            for(var i = 0; i < results.length; i++) {
+                results[i].date = parseTime(results[i].date);
+            }
+            return data;
         }
     </script>
 </body>
