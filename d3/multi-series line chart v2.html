@@ -18,7 +18,12 @@
     <svg width="960" height="500"></svg>
     <script src="//d3js.org/d3.v4.min.js"></script>
     <script>
-        var svg = d3.select("svg"),
+
+        /*var Chart = (function(window,d3) {
+
+        })(window,d3);*/
+
+        var svg = d3.select("svg").attr("id","chart"),
                 margin = {top: 20, right: 80, bottom: 30, left: 50},
                 width = svg.attr("width") - margin.left - margin.right,
                 height = svg.attr("height") - margin.top - margin.bottom,
@@ -109,6 +114,12 @@
                 results[i].date = parseTime(results[i].date);
             }
             return data;
+        }
+
+        d3.select(window).on("resize",resize);
+
+        function resize() {
+
         }
     </script>
 </body>

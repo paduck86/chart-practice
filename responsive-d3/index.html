@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>D3 Line Chart</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div id="chart"></div>
+<script>
+    var Chart = (function(window,d3) {
+
+        var svg, data, x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, touchScale;
+        var breakpoint = 768;
+
+        d3.csv('data.csv', init); //load data, then initialize chart
+
+        //called once the data is loaded
+        function init(csv) {
+            data = csv;
+
+            //initialize scales
+            xExtent = d3.extent(data, function(d,i) { return new Date(d.date) });
+            yExtent = d3.extent(data, function(d,i) { return d.value });
+            x = d3.time.scale().domain(xExtent);
+            y = d3.scale.linear().domain(yExtent);
+
+            //initialize axis
+            xAxis = d3.svg.axis().orient('bottom');
+            yAxis = d3.svg.axis().orient('left');
+
+            //the path generator for the line chart
+            line = d3.svg.line()
+                    .x(function(d) { return x(new Date(d.date)) })
+                    .y(function(d) { return y(d.value) });
+
+            //initialize svg
+            svg = d3.select('#chart').append('svg');
+            chartWrapper = svg.append('g');
+            path = chartWrapper.append('path').datum(data).classed('line', true);
+            chartWrapper.append('g').classed('x axis', true);
+            chartWrapper.append('g').classed('y axis', true);
+
+            chartWrapper.on('touchmove', onTouchMove);
+            locator = chartWrapper.append('circle')
+                    .style('display', 'none')
+                    .attr('r', 10)
+                    .attr('fill', '#f00');
+
+            touchScale = d3.scale.linear();
+
+            //render the chart
+            render();
+        }
+
+        function render() {
+
+            //get dimensions based on window size
+            updateDimensions(window.innerWidth);
+
+            //update x and y scales to new dimensions
+            x.range([0, width]);
+            y.range([height, 0]);
+
+            touchScale.domain([0,width]).range([0,data.length-1]).clamp(true);
+
+            //update svg elements to new dimensions
+            svg
+                    .attr('width', width + margin.right + margin.left)
+                    .attr('height', height + margin.top + margin.bottom);
+            chartWrapper.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+            //update the axis and line
+            xAxis.scale(x);
+
+            if(window.innerWidth < breakpoint) {
+                xAxis.ticks(d3.time.month, 2);
+            } else {
+                xAxis.ticks(d3.time.month, 1);
+            }
+
+            //yAxis.scale(y);
+            yAxis.scale(y).orient(window.innerWidth < breakpoint ? 'right' : 'left');
+
+            svg.select('.x.axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis);
+
+            svg.select('.y.axis')
+                    .call(yAxis);
+
+            path.attr('d', line);
+        }
+
+        function updateDimensions(winWidth) {
+            margin.top = 20;
+            //margin.right = 50;
+            margin.right = winWidth < breakpoint ? 0 : 50;
+            //margin.left = 50;
+            margin.left = winWidth < breakpoint ? 0 : 50;
+            margin.bottom = 50;
+
+            width = winWidth - margin.left - margin.right;
+            //height = 500 - margin.top - margin.bottom;
+            height = .7 * width; // aspect ratio is 0.7
+        }
+
+        function onTouchMove() {
+            var xPos = d3.touches(this)[0][0];
+            var d = data[~~touchScale(xPos)];
+            locator.attr({
+                        cx : x(new Date(d.date)),
+                        cy : y(d.value)
+                    })
+                    .style('display', 'block');
+        }
+
+        return {
+            render : render
+        }
+
+    })(window,d3);
+
+    window.addEventListener('resize', Chart.render);
+</script>
+</body>
+</html>
