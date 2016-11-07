@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <style>
         .axis--x path {
-            /*display: none;*/
+            display: none;
         }
 
         .line {
@@ -53,7 +53,7 @@
             var columns = ["date","BOK","DFF"];
             if (error) throw error;
 
-            var cities = columns.slice(1).map(function(id) {
+            var rate_types = columns.slice(1).map(function(id) {
                 return {
                     id: id,
                     values: results.map(function(d) {
@@ -65,11 +65,11 @@
             x.domain(d3.extent(results, function(d) { return d.date; }));
 
             y.domain([
-                d3.min(cities, function(c) { return d3.min(c.values, function(d) { return d.rate; }); }),
-                d3.max(cities, function(c) { return d3.max(c.values, function(d) { return d.rate; }); })
+                d3.min(rate_types, function(c) { return d3.min(c.values, function(d) { return d.rate; }); }),
+                d3.max(rate_types, function(c) { return d3.max(c.values, function(d) { return d.rate; }); })
             ]);
 
-            z.domain(cities.map(function(c) { return c.id; }));
+            z.domain(rate_types.map(function(c) { return c.id; }));
 
             g.append("g")
                     .attr("class", "axis axis--x")
@@ -87,7 +87,7 @@
                     .text("rate, %");
 
             var city = g.selectAll(".city")
-                    .data(cities)
+                    .data(rate_types)
                     .enter().append("g")
                     .attr("class", "city");
 
