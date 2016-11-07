@@ -53,6 +53,7 @@
             chartWrapper.append('g').classed('y axis', true);
 
             chartWrapper.on('touchmove', onTouchMove);
+            chartWrapper.on('mouseover', onMouseOver);
 
             //add locator
             locator = chartWrapper.append('circle')
@@ -165,6 +166,17 @@
                         cy : y(d.value)
                     })
                     .style('display', 'block');
+        }
+
+        function onMouseOver() {
+            var xPos = d3.mouse(this)[0];
+            var d = data[~~touchScale(xPos)];
+
+            locator.attr({
+                cx : x(new Date(d.date)),
+                cy : y(d.value)
+            })
+            .style('display', 'block');
         }
 
         return {
