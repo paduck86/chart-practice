@@ -12,7 +12,7 @@
 <script>
     var Chart = (function(window,d3) {
 
-        var svg, data, x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator;
+        var svg, data, x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results;
 
         var breakPoint = 768;
         var parseTime = d3.time.format("%Y%m%d");
@@ -23,12 +23,14 @@
 
         //called once the data is loaded
         function init(error, data) {
-            var results = data.results;
-            for(var i = 0; i < results.length; i++) {
-                results[i].date = parseTime(results[i].date);
-            }
+            results = data.results;
+            /*for(var i = 0; i < results.length; i++) {
+                results[i].date = new Date(results[i].date);
+            }*/
 
             if (error) throw error;
+
+            var columns = ["date","BOK","DFF"];
 
             var rate_types = columns.slice(1).map(function(id) {
                 return {
@@ -65,7 +67,7 @@
             .append('g')
             .style('pointer-events', 'all');
 
-            path = chartWrapper.append('path').datum(data).classed('line', true);
+            path = chartWrapper.append('path').datum(results).classed('line', true);
 
             chartWrapper.append('g').classed('x axis', true);
             chartWrapper.append('g').classed('y axis', true);
@@ -94,7 +96,7 @@
             x.range([0, width]);
             y.range([height, 0]);
 
-            touchScale.domain([0,width]).range([0,data.length-1]).clamp(true);
+            touchScale.domain([0,width]).range([0,results.length-1]).clamp(true);
 
             //update svg elements to new dimensions
             svg
