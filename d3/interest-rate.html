@@ -12,7 +12,7 @@
 <script>
     var Chart = (function(window,d3) {
 
-        var svg, data, x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results;
+        var svg, data = [], x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results, touchScale;
 
         var breakPoint = 768;
         var parseTime = d3.time.format("%Y%m%d");
@@ -54,8 +54,13 @@
 
             //the path generator for the line chart
             line = d3.svg.line()
-            .x(function(d) { return x(new Date(d.date)) })
-            .y(function(d) { return y(d.value) });
+            .x(function(d) {
+                return x(new Date(d.date))
+            })
+            .y(function(d) {
+                //return y(d.value)
+                return y(d.BOK)
+            });
 
             //initialize svg
             svg = d3.select('#chart')
@@ -111,10 +116,10 @@
             yAxis.scale(y).orient(window.innerWidth < breakPoint ? 'right' : 'left');
 
             if(window.innerWidth < breakPoint) {
-                xAxis.ticks(d3.time.month, 2)
+                xAxis.ticks(d3.time.year, 2)
             }
             else {
-                xAxis.ticks(d3.time.month, 1)
+                xAxis.ticks(d3.time.year, 1)
             }
 
             svg.select('.x.axis')
@@ -125,10 +130,10 @@
             .call(yAxis);
 
             path.attr('d', line);
-            renderLabels();
+            //renderLabels();
         }
 
-        var labels = [
+        /*var labels = [
             {
                 x: new Date('03-15-2014'),
                 y: .17,
@@ -141,7 +146,7 @@
                 text: 'Test Label 2',
                 orient: 'left'
             }
-        ]
+        ]*/
 
         function renderLabels() {
 
@@ -179,22 +184,22 @@
 
         function onTouchMove() {
             var xPos = d3.touches(this)[0][0];
-            var d = data[~~touchScale(xPos)];
+            var d = results[~~touchScale(xPos)];
 
             locator.attr({
                 cx : x(new Date(d.date)),
-                cy : y(d.value)
+                cy : y(d.BOK)
             })
             .style('display', 'block');
         }
 
         function onMouseOver() {
             var xPos = d3.mouse(this)[0];
-            var d = data[~~touchScale(xPos)];
+            var d = results[~~touchScale(xPos)];
 
             locator.attr({
                 cx : x(new Date(d.date)),
-                cy : y(d.value)
+                cy : y(d.BOK)
             })
             .style('display', 'block');
         }
