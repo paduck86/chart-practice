@@ -12,7 +12,7 @@
 <script>
     var Chart = (function(window,d3) {
 
-        var svg, data = [], x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results, touchScale, rate_types, rates;
+        var svg, data = [], x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator1, locator2, results, touchScale, rate_types, rates;
 
         var breakPoint = 768;
         var parseTime = d3.time.format("%Y%m%d");
@@ -25,9 +25,6 @@
         //called once the data is loaded
         function init(error, data) {
             results = data.results;
-            /*for(var i = 0; i < results.length; i++) {
-                results[i].date = new Date(results[i].date);
-            }*/
 
             if (error) throw error;
 
@@ -88,10 +85,19 @@
             chartWrapper.on('mouseover', onMouseOver);
 
             //add locator
-            locator = chartWrapper.append('circle')
+            locator1 = chartWrapper.append('circle')
             .style('display', 'none')
-            .attr('r', 10)
-            .attr('fill', '#f00');
+            .attr('r', 7.5)
+            .attr('fill', '#fff')
+            .attr('stroke', color('BOK'))
+            .attr('stroke-width', '3px');
+
+            locator2 = chartWrapper.append('circle')
+            .style('display', 'none')
+            .attr('r', 7.5)
+            .attr('fill', '#fff')
+            .attr('stroke', color('DFF'))
+            .attr('stroke-width', '3px');
 
             touchScale = d3.scale.linear();
 
@@ -136,13 +142,9 @@
             svg.select('.y.axis')
             .call(yAxis);
 
-            /*path.attr('d', line);*/
 
-
-            rates.attr("d",function(d) {
-                return line(d.values)}
-            )
-                .style("stroke",function(d) {return color(d.category)});
+            rates.attr("d",function(d) {return line(d.values)})
+                .style("stroke",function(d) {return color(d.id)});
 
             //renderLabels();
         }
@@ -200,9 +202,14 @@
             var xPos = d3.touches(this)[0][0];
             var d = results[~~touchScale(xPos)];
 
-            locator.attr({
+            locator1.attr({
                 cx : x(new Date(d.date)),
                 cy : y(d.BOK)
+            })
+            .style('display', 'block');
+            locator2.attr({
+                cx : x(new Date(d.date)),
+                cy : y(d.DFF)
             })
             .style('display', 'block');
         }
@@ -211,9 +218,15 @@
             var xPos = d3.mouse(this)[0];
             var d = results[~~touchScale(xPos)];
 
-            locator.attr({
+            locator1.attr({
                 cx : x(new Date(d.date)),
                 cy : y(d.BOK)
+            })
+            .style('display', 'block');
+
+            locator2.attr({
+                cx : x(new Date(d.date)),
+                cy : y(d.DFF)
             })
             .style('display', 'block');
         }
