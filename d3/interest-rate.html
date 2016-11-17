@@ -12,11 +12,12 @@
 <script>
     var Chart = (function(window,d3) {
 
-        var svg, data = [], x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results, touchScale;
+        var svg, data = [], x, y, xAxis, yAxis, dim, chartWrapper, line, path, margin = {}, width, height, locator, results, touchScale, rate_types, rates;
 
         var breakPoint = 768;
         var parseTime = d3.time.format("%Y%m%d");
         var url = "http://rtrend.co.kr/api/rate/list?show=debug";
+        var color = d3.scale.category10();
 
         //d3.csv('data.csv', init);
         d3.json(url, init); //load data, then initialize chart
@@ -31,8 +32,9 @@
             if (error) throw error;
 
             var columns = ["date","BOK","DFF"];
+            color.domain(columns.slice(1));
 
-            var rate_types = columns.slice(1).map(function(id) {
+            rate_types = columns.slice(1).map(function(id) {
                 return {
                     id: id,
                     values: results.map(function(d) {
@@ -59,20 +61,25 @@
             })
             .y(function(d) {
                 //return y(d.value)
-                return y(d.BOK)
+                return y(d.rate)
             });
+
 
             //initialize svg
             svg = d3.select('#chart')
             .append('svg')
             .style('pointer-events', 'none');
 
-
             chartWrapper = svg
             .append('g')
             .style('pointer-events', 'all');
 
-            path = chartWrapper.append('path').datum(results).classed('line', true);
+            /*path = chartWrapper.append('path').datum(results).classed('line', true);*/
+
+            rates = chartWrapper.selectAll(".rate")
+             .data(rate_types)
+             .enter().append("path")
+             .attr("class","line");
 
             chartWrapper.append('g').classed('x axis', true);
             chartWrapper.append('g').classed('y axis', true);
@@ -129,7 +136,14 @@
             svg.select('.y.axis')
             .call(yAxis);
 
-            path.attr('d', line);
+            /*path.attr('d', line);*/
+
+
+            rates.attr("d",function(d) {
+                return line(d.values)}
+            )
+                .style("stroke",function(d) {return color(d.category)});
+
             //renderLabels();
         }
 
